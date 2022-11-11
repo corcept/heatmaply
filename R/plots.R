@@ -784,7 +784,8 @@ plotly_side_color_plot <- function(df,
       ticktext = levels,
       len = colorbar_len
     )
-  )
+  ) %>%
+    hide_colorbar()
   if (type == "row") {
     p <- p %>% layout(
       xaxis = list(
