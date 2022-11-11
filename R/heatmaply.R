@@ -1068,7 +1068,8 @@ heatmaply.heatmapr <- function(x,
         fontsize = fontsize_col,
         is_colors = !is.null(RowSideColors),
         colorbar_len = side_color_colorbar_len,
-        label_name = label_names[[1]]
+        label_name = label_names[[1]],
+        custom_hovertext = x$row_side_colors_custom_hovertext
       )
     }
   }

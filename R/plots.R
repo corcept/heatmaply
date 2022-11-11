@@ -697,7 +697,9 @@ plotly_side_color_plot <- function(df,
                                    label_name = NULL,
                                    colorbar_len = 0.3,
                                    fontsize = 10,
-                                   show_legend = TRUE) {
+                                   show_legend = FALSE,
+                                   custom_hovertext = NULL
+                                   ) {
   type <- match.arg(type)
 
   if (is.null(label_name)) label_name <- type
@@ -746,25 +748,30 @@ plotly_side_color_plot <- function(df,
     )
   }
 
-  text_mat <- data
-  text_mat[] <- lapply(
-    seq_along(text_mat),
-    function(i) {
-      if (type == "row") {
-        paste0(
-          "variable: ", colnames(data)[i], "<br>",
-          "value: ", data[, i], "<br>",
-          label_name, ": ", rownames(data)
-        )
-      } else {
-        paste0(
-          "variable: ", rownames(data),
-          "value: ", data[, i], "<br>",
-          label_name, ": ", colnames(data)[i], "<br>"
-        )
+  text_mat = NULL
+  if(is.null(custom_hovertext)) {
+    text_mat <- data
+    text_mat[] <- lapply(
+      seq_along(text_mat),
+      function(i) {
+        if (type == "row") {
+          paste0(
+            "variable: ", colnames(data)[i], "<br>",
+            "value: ", data[, i], "<br>",
+            label_name, ": ", rownames(data)
+          )
+        } else {
+          paste0(
+            "variable: ", rownames(data),
+            "value: ", data[, i], "<br>",
+            label_name, ": ", colnames(data)[i], "<br>"
+          )
+        }
       }
-    }
-  )
+    )
+  } else {
+    text_mat = custom_hovertext
+  }
 
   ## Ensure tickvals are in right position when n = 2
   offset <- ((length(levels) - 1) / length(levels)) / 2
@@ -788,8 +795,13 @@ plotly_side_color_plot <- function(df,
       ticktext = levels,
       len = colorbar_len
     )
-  ) %>%
-    hide_colorbar()
+  )
+
+  if(!show_legend) {
+    p <- p %>%
+      hide_colorbar()
+  }
+
   if (type == "row") {
     p <- p %>% layout(
       xaxis = list(

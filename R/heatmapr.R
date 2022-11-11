@@ -364,10 +364,23 @@ heatmapr <- function(x,
   if (!is.null(point_size_mat)) {
     point_size_mat <- point_size_mat[rowInd, colInd, drop = FALSE]
   }
+
+  # Allow for custom hover text for row_side_colors
+  row_side_colors_custom_hovertext = NULL
+  if (!is.null(custom_hovertext) &! is.null(row_side_colors)) {
+    # If both are present, and the custom_hovertext subset for the the row_side_colors is not empty...
+    if(colnames(row_side_colors) %in% colnames(custom_hovertext)) {
+      row_side_colors_custom_hovertext = custom_hovertext[,colnames(row_side_colors)]
+    }
+  }
+
   if (!is.null(custom_hovertext)) {
     custom_hovertext <- custom_hovertext[rowInd, colInd, drop = FALSE]
   }
   if (!is.null(row_side_colors)) {
+    if (!(is.data.frame(row_side_colors) | is.matrix(row_side_colors))) {
+      row_side_colors <- data.frame("row_side_colors" = row_side_colors)
+    }
     if (!(is.data.frame(row_side_colors) | is.matrix(row_side_colors))) {
       row_side_colors <- data.frame("row_side_colors" = row_side_colors)
     }
@@ -442,6 +455,11 @@ heatmapr <- function(x,
   if (is.data.frame(custom_hovertext)) {
     custom_hovertext <- as.matrix(custom_hovertext)
   }
+  if(!is.null(row_side_colors_custom_hovertext)) {
+    if (is.data.frame(row_side_colors_custom_hovertext)) {
+      row_side_colors_custom_hovertext <- as.matrix(row_side_colors_custom_hovertext)
+    }
+  }
 
   mtx <- list(
     data = as.matrix(x),
@@ -452,7 +470,6 @@ heatmapr <- function(x,
     point_size_mat = point_size_mat,
     custom_hovertext = custom_hovertext
   )
-
 
   if (is.factor(x)) {
     colors <- col_factor(colors, x, na.color = "transparent")
@@ -492,6 +509,7 @@ heatmapr <- function(x,
   )
 
   if (!is.null(row_side_colors)) heatmapr[["row_side_colors"]] <- row_side_colors
+  if (!is.null(row_side_colors_custom_hovertext)) heatmapr[["row_side_colors_custom_hovertext"]] <- row_side_colors_custom_hovertext
   if (!is.null(col_side_colors)) heatmapr[["col_side_colors"]] <- col_side_colors
 
   class(heatmapr) <- "heatmapr"
