@@ -368,8 +368,8 @@ heatmapr <- function(x,
   # Allow for custom hover text for row_side_colors
   row_side_colors_custom_hovertext = NULL
   if (!is.null(custom_hovertext) &! is.null(row_side_colors)) {
-    # If both are present, and the custom_hovertext subset for the the row_side_colors is not empty...
-    if(colnames(row_side_colors) %in% colnames(custom_hovertext)) {
+    # If both are present, and the custom_hovertext subset for the row_side_colors is not empty...
+    if(any(colnames(row_side_colors) %in% colnames(custom_hovertext))) {
       row_side_colors_custom_hovertext = custom_hovertext[rowInd,colnames(row_side_colors)]
     }
   }
